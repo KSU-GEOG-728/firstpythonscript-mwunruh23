@@ -17,8 +17,11 @@ arcpy.env.overwriteOutput = True
 arcpy.env.workspace = C:/Users/mwunruh/Documents/GitHub/firstpythonscript-mwunruh23/GISProject/ExerciseData.gdb
 
 #perform geoprocessing
-selectEcoregion = arcpy.management.SelectLayerByAttribute('ks_ecoregions', 'NEW_SELECTION', "US_L3NAME = 'Flint Hills'")
+arcpy.management.SelectLayerByAttribute('ks_ecoregions', 'NEW_SELECTION', "US_L3NAME = 'Flint Hills'")
 
-ecoregionBuffer = arcpy.analysis.Buffer(selectEcoregion, "FlintHillsBuffer", "10 Kilometers")
+arcpy.analysis.Buffer('ks_ecoregions', "flintHillsBuffer", "10 Kilometers")
 
-arcpy.analysis.Clip(selectEcoregion, ecoregionBuffer, "RiverClipWithBuffer")
+arcpy.analysis.Clip('flintHillsBuffer', 'flintHillsBuffer', "RiverClipWithBuffer")
+
+arcpy.management.CalculateField('RiverClipWithBuffer', 'Length_Mi', "!Shape_Length! * 0.000621371")
+arcpy.analysis.Statistics('RiverClipWithBuffer', 'outStat', [['Length_Mi', 'SUM']])
